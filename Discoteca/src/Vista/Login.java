@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 
 import Modelo.verificacionCorreo;
@@ -31,7 +32,6 @@ public class Login extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField txtUser;
-	private JTextField txtPass;
 
 	public Login() {
 		setTitle("Inicio de sesión");
@@ -92,8 +92,8 @@ public class Login extends JFrame {
 		lblPass.setFont(new Font("Tw Cen MT", Font.BOLD, 25));
 		panPass.add(lblPass);
 		
-		txtPass = new JTextField();
-		txtPass.setFont(new Font("SimSun-ExtB", Font.BOLD, 25));
+		JPasswordField txtPass = new JPasswordField();
+		txtPass.setFont(new Font("Tw Cen MT", Font.BOLD, 25));
 		panPass.add(txtPass);
 		txtPass.setColumns(25);
 		
