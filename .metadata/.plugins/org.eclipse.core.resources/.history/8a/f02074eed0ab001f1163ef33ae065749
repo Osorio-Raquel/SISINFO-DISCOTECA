@@ -77,12 +77,12 @@ public class FacturaEnPDF extends ReportePapa{
         	PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(dest));
             document.open();
             
-            String text = "\nMacrodistrito Sur\nTelefono: 72036743\nLa Paz - Bolivia";
+            String text = "Sucursal #1\nAv. Hernando Siles\nCalle 3 de Obrajes\nTelefono: 72036743\nLa Paz - Bolivia";
             Font encabezado = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL);
             Paragraph paragraph = new Paragraph(text, encabezado);
             document.add(paragraph);
             
-            String imagePath = "C:\\Documentos\\Imagenes\\logo.jpg";
+            String imagePath = "C:\\Documentos\\imag\\logo330x200.png";
             Image imagen = Image.getInstance(imagePath);
             imagen.scaleToFit(150, 150);
             float xPos = document.getPageSize().getWidth() - imagen.getScaledWidth() - 20; // Ajustar posición X para la derecha

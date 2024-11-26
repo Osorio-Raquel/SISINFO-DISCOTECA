@@ -17,8 +17,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
 import java.awt.GridLayout;
 import javax.swing.JTextField;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Pedido extends JFrame {
 
@@ -28,7 +26,26 @@ public class Pedido extends JFrame {
 	private JTextField txtProveedor;
 	private JTextField txtTel;
 	private JTextField txtCant;
-	
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Pedido frame = new Pedido();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
 	public Pedido() {
 		setTitle("Pedido");
 		setResizable(false);
@@ -164,13 +181,6 @@ public class Pedido extends JFrame {
 		panBtn.add(panVolver, BorderLayout.WEST);
 		
 		JButton btnVolver = new JButton("Volver");
-		btnVolver.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Administrador admin = new Administrador();
-				admin.setVisible(true);
-				dispose();
-			}
-		});
 		btnVolver.setForeground(new Color(217, 236, 233));
 		btnVolver.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btnVolver.setBackground(new Color(0, 198, 176));

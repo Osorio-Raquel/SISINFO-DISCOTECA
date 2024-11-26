@@ -174,7 +174,7 @@ public class Regalias extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Administrador admin = new Administrador();
 				admin .setVisible(true);
-				dispose();
+				dispose()
 			}
 		});
 		btnVolver.setForeground(new Color(217, 236, 233));

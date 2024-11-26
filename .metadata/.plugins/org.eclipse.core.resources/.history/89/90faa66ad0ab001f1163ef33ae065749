@@ -17,14 +17,31 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Regalias extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Regalias frame = new Regalias();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
 	public Regalias() {
 		setTitle("Regalías");
 		setResizable(false);
@@ -170,13 +187,6 @@ public class Regalias extends JFrame {
 		panBtn.add(pan1, BorderLayout.WEST);
 		
 		JButton btnVolver = new JButton("Volver");
-		btnVolver.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Administrador admin = new Administrador();
-				admin .setVisible(true);
-				dispose();
-			}
-		});
 		btnVolver.setForeground(new Color(217, 236, 233));
 		btnVolver.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btnVolver.setBackground(new Color(0, 198, 176));

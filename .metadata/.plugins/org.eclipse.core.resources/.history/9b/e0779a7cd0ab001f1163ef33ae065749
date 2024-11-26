@@ -17,8 +17,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Regalias extends JFrame {
 
@@ -170,13 +168,6 @@ public class Regalias extends JFrame {
 		panBtn.add(pan1, BorderLayout.WEST);
 		
 		JButton btnVolver = new JButton("Volver");
-		btnVolver.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Administrador admin = new Administrador();
-				admin .setVisible(true);
-				dispose();
-			}
-		});
 		btnVolver.setForeground(new Color(217, 236, 233));
 		btnVolver.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btnVolver.setBackground(new Color(0, 198, 176));

@@ -82,7 +82,7 @@ public class FacturaEnPDF extends ReportePapa{
             Paragraph paragraph = new Paragraph(text, encabezado);
             document.add(paragraph);
             
-            String imagePath = "C:\\Documentos\\Imagenes\\logo.jpg";
+            String imagePath = "C:\\\\\\\\Documentos\\\\\\\\Imagenes\\\\\\\\logo.jpg";
             Image imagen = Image.getInstance(imagePath);
             imagen.scaleToFit(150, 150);
             float xPos = document.getPageSize().getWidth() - imagen.getScaledWidth() - 20; // Ajustar posición X para la derecha

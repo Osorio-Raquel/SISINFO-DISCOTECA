@@ -72,13 +72,6 @@ public class Administrador extends JFrame {
 		panMenu.setLayout(new GridLayout(5, 1, 0, 50));
 		
 		JButton btn1 = new JButton("Pedido");
-		btn1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Pedido pe = new Pedido();
-				pe.setVisible(true);
-				dispose();
-			}
-		});
 		btn1.setForeground(new Color(217, 236, 233));
 		btn1.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btn1.setBackground(new Color(0, 198, 176));
@@ -98,13 +91,6 @@ public class Administrador extends JFrame {
 		panMenu.add(btn2);
 		
 		JButton btn3 = new JButton("Regalías");
-		btn3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Regalias re = new Regalias();
-				re.setVisible(true);
-				dispose();
-			}
-		});
 		btn3.setForeground(new Color(217, 236, 233));
 		btn3.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btn3.setBackground(new Color(0, 198, 176));
