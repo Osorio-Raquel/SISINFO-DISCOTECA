@@ -122,7 +122,7 @@ public class Bartender extends JFrame {
 		        int idProducto = rs.getInt("ID_Producto");   
 		        String nombreBebida = rs.getString("Nombre"); 
 		        int disponibilidad = rs.getInt("stock");     
-		        double precio = rs.getDouble("pr.precio"); 
+		        double precio = rs.getDouble("preciocompra"); 
 
 		        model.addRow(new Object[]{idProducto, nombreBebida, disponibilidad, precio});
 		    }
@@ -384,7 +384,7 @@ public class Bartender extends JFrame {
 		            } catch (SQLException ex) {
 		                ex.printStackTrace();
 		            }
-		        Factura l = new Factura(1);
+		        Factura l = new Factura(nuevoIdFactura);
 		        l.setVisible(true);    
 		        dispose();  
 		        }
