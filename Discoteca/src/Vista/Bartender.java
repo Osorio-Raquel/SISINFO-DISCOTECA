@@ -1,6 +1,7 @@
 package Vista;
 
 import java.awt.BorderLayout;
+import java.sql.Statement;
 import java.awt.Color;
 import java.awt.EventQueue;
 
@@ -26,8 +27,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
-import java.beans.Statement;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,7 +40,7 @@ public class Bartender extends JFrame {
 	private JPanel contentPane;
 	private JTable tblBebidas;
 	private JTextField txtCant;
-	private JTable tblDetalle;
+	private static JTable tblDetalle;
 	
 	public Bartender() {
 		setTitle("Bartender");
@@ -220,6 +221,8 @@ public class Bartender extends JFrame {
 		                    stmt.executeUpdate();
 
 		                    txtCant.setText("");
+		                    
+		                    actualizarTablaDetalle();
 
 		                    JOptionPane.showMessageDialog(null, "Bebida agregada a la factura.");
 		                } catch (SQLException ex) {
@@ -241,39 +244,39 @@ public class Bartender extends JFrame {
 		panDetalle.setBorder(new EmptyBorder(5, 15, 20, 25));
 		panDetalle.setBackground(new Color(9, 38, 53));
 		contentPane.add(panDetalle);
-		
+
 		JPanel panDetTitle = new JPanel();
 		panDetTitle.setBackground(new Color(9, 38, 53));
 		panDetalle.setLayout(new BorderLayout(0, 0));
 		FlowLayout fl_panDetTitle = (FlowLayout) panDetTitle.getLayout();
 		fl_panDetTitle.setAlignment(FlowLayout.LEFT);
 		panDetalle.add(panDetTitle, BorderLayout.NORTH);
-		
+
 		JLabel lblDetalle = new JLabel("Detalle");
 		lblDetalle.setForeground(new Color(112, 235, 179));
 		lblDetalle.setFont(new Font("Tw Cen MT", Font.BOLD, 27));
 		panDetTitle.add(lblDetalle);
-		
-		JScrollPane panTablaDet = new JScrollPane();
-		panTablaDet.setBackground(new Color(9, 38, 53));
-		panDetalle.add(panTablaDet, BorderLayout.CENTER);
-		
-		JTable tblDetalle = new JTable();
+
+		tblDetalle = new JTable();
 		tblDetalle.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Concepto", "Cantidad", "Costo"
-			}
+		    new Object[][] {},
+		    new String[] { "Concepto", "Cantidad", "Costo" } 
 		) {
-			Class[] columnTypes = new Class[] {
-				String.class, Integer.class, Double.class
-			};
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
+		    Class[] columnTypes = new Class[] {
+		        String.class, Integer.class, Double.class
+		    };
+
+		    @Override
+		    public Class getColumnClass(int columnIndex) {
+		        return columnTypes[columnIndex];
+		    }
 		});
-		panTablaDet.add(tblDetalle);
+
+		JScrollPane panTablaDet = new JScrollPane(tblDetalle);
+		panTablaDet.setBackground(new Color(9, 38, 53));
+
+		panDetalle.add(panTablaDet, BorderLayout.CENTER);
+
 		
 		JPanel panBtn = new JPanel();
 		panBtn.setBackground(new Color(9, 38, 53));
@@ -297,7 +300,6 @@ public class Bartender extends JFrame {
 		            conn = conexionBD.conexion();
 		            stmt = conn.createStatement();
 
-		            // Ejecutar la consulta DELETE
 		            int rowsAffected = stmt.executeUpdate(query);
 
 		            System.out.println(rowsAffected + " registros eliminados con ID_Factura = -1.");
@@ -344,11 +346,92 @@ public class Bartender extends JFrame {
 		btnFacturar.setBackground(new Color(0, 198, 176));
 		pan2.add(btnFacturar);
 		
+		btnFacturar.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        Connection conn = null;
+		        java.sql.Statement stmt = null;
+
+	            int nuevoIdFactura = -1; 
+
+		        try {
+		            conn = conexionBD.conexion();
+		            stmt = conn.createStatement();
+
+		            String queryUltimoId = "SELECT MAX(ID_Factura) FROM Factura";
+		            ResultSet rs = stmt.executeQuery(queryUltimoId);
+
+		            if (rs.next()) {
+		                nuevoIdFactura = rs.getInt(1) + 1; 
+		            }
+
+		            String queryActualizar = "UPDATE Discoteca.DetalleFactura SET ID_Factura = ? WHERE ID_Factura = -1";
+		            PreparedStatement pstmt = conn.prepareStatement(queryActualizar);
+		            pstmt.setInt(1, nuevoIdFactura); 
+
+		            int rowsAffected = pstmt.executeUpdate();
+
+		            System.out.println(rowsAffected + " registros actualizados con el nuevo ID_Factura: " + nuevoIdFactura);
+
+
+		        } catch (SQLException ex) {
+		            ex.printStackTrace();
+		            JOptionPane.showMessageDialog(null, "Error al generar la factura.");
+		        } finally {
+		            try {
+		                if (stmt != null) stmt.close();
+		                if (conn != null) conn.close();
+		            } catch (SQLException ex) {
+		                ex.printStackTrace();
+		            }
+		        Factura l = new Factura(nuevoIdFactura);
+		        l.setVisible(true);    
+		        dispose();  
+		        }
+		    }
+		});
+
+		
 		JPanel pan3 = new JPanel();
 		pan3.setBackground(new Color(9, 38, 53));
 		panBtn.add(pan2, BorderLayout.CENTER);
 		
 		setVisible(true);
 	}
+	private static void actualizarTablaDetalle() {
+	    if (tblDetalle == null) {
+	        System.err.println("Error: tblDetalle no ha sido inicializada.");
+	        return;
+	    }
 
-}
+	    DefaultTableModel model = (DefaultTableModel) tblDetalle.getModel();
+	    model.setRowCount(0); 
+
+	    String query = "SELECT df.ID_Producto, p.Nombre, df.Cantidad, df.Subtotal " +
+	                   "FROM Discoteca.DetalleFactura df " +
+	                   "JOIN Discoteca.Producto p ON df.ID_Producto = p.ID_Producto " +
+	                   "WHERE df.ID_Factura = -1";
+	    conexionBD conec= new conexionBD();
+
+	    try (Connection conn = conec.conexion();
+	         Statement stmt = conn.createStatement();
+	         ResultSet rs = stmt.executeQuery(query)) {
+
+	        while (rs.next()) {
+	            String nombreProducto = rs.getString("Nombre");
+	            int cantidad = rs.getInt("Cantidad");
+	            double subtotal = rs.getDouble("Subtotal");
+
+	            model.addRow(new Object[]{nombreProducto, cantidad, subtotal});
+	        }
+
+	        tblDetalle.revalidate(); 
+	        tblDetalle.repaint();  
+
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Error al actualizar la tabla.");
+	    }
+	}
+
+	}
