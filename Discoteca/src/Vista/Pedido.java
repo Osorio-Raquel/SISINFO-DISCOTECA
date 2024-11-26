@@ -14,22 +14,34 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+
+import Modelo.Bebidas;
+import conexionBase.conexionBD;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.GridLayout;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 
 public class Pedido extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField txtNombre;
 	private JTextField txtProveedor;
 	private JTextField txtTel;
 	private JTextField txtCant;
-	
+	JTable tblBebidas = new JTable();
+	ArrayList<String> bebidas = new ArrayList<String>();
 	public Pedido() {
+		bebidas =  obtenerDatos();
 		setTitle("Pedido");
 		setResizable(false);
 		setBounds(350, 150, 1280, 720);
@@ -68,24 +80,16 @@ public class Pedido extends JFrame {
 		panTable.setBackground(new Color(9, 38, 53));
 		panBebidas.add(panTable, BorderLayout.CENTER);
 		
-		JTable tblBebidas = new JTable();
+		
 		tblBebidas.setForeground(new Color(9, 38, 53));
 		tblBebidas.setBackground(new Color(217, 236, 233));
 		tblBebidas.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Bebida"
-			}
-		) {
-			Class[] columnTypes = new Class[] {
-				String.class
-			};
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		});
-		panTable.add(tblBebidas);
+			    new Object[][] {},
+			    new String[] { "Bebida"}
+			));
+		panTable.setViewportView(tblBebidas);
+		
+		actualizarTablaBebidas();
 		
 		JPanel panDatos = new JPanel();
 		panDatos.setBorder(new EmptyBorder(0, 150, 0, 0));
@@ -98,15 +102,6 @@ public class Pedido extends JFrame {
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		pan1.setBackground(new Color(9, 38, 53));
 		panDatos.add(pan1);
-		
-		JLabel lblNombre = new JLabel("Nombre:");
-		lblNombre.setForeground(new Color(158, 200, 185));
-		lblNombre.setFont(new Font("Tw Cen MT", Font.BOLD, 25));
-		pan1.add(lblNombre);
-		
-		txtNombre = new JTextField();
-		pan1.add(txtNombre);
-		txtNombre.setColumns(10);
 		
 		JPanel pan2 = new JPanel();
 		FlowLayout flowLayout_1 = (FlowLayout) pan2.getLayout();
@@ -184,6 +179,35 @@ public class Pedido extends JFrame {
 		panBtn.add(panPedir, BorderLayout.EAST);
 		
 		JButton btnPedir = new JButton("Pedir");
+		btnPedir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int cant = validard(txtCant.getText());
+				int numero = validard(txtTel.getText());
+				if(cant > 0 && txtProveedor.getText().length() > 0 && numero > 0) {
+					int idprov = buscarPRoveedor(txtProveedor.getText());
+					if(idprov != -1) {
+						idprov = registrarProveedor(txtProveedor.getText());
+						int selectedIndex = tblBebidas.getSelectedRow();
+						if (selectedIndex != -1) {
+							System.out.println("Indice tabla" + selectedIndex);
+							int prodID = obtenerProductoID(bebidas.get(selectedIndex));
+							actualizarBD(prodID, idprov, cant);
+							JOptionPane.showMessageDialog(null, "Se ha realizado el pedido", "MENSAJE", JOptionPane.INFORMATION_MESSAGE );
+				            txtTel.setText("");
+				            txtProveedor.setText("");
+				            txtCant.setText("");
+						} else {
+							JOptionPane.showMessageDialog(null, "No hay ningun producto seleccionado", "MENSAJE", JOptionPane.WARNING_MESSAGE);
+				            
+						}
+					}
+					System.out.println(idprov);
+				} else {
+					JOptionPane.showMessageDialog(null, "Alguno de los datos no es valido", "MENSAJE", JOptionPane.WARNING_MESSAGE);
+		            
+				}
+			}
+		});
 		btnPedir.setForeground(new Color(217, 236, 233));
 		btnPedir.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btnPedir.setBackground(new Color(0, 198, 176));
@@ -194,6 +218,186 @@ public class Pedido extends JFrame {
 		panBtn.add(panPedir, BorderLayout.CENTER);
 		
 		setVisible(true);
+	}
+	
+	public static int validard(String v) {
+		int s = 0;
+        try {
+            s = Integer.parseInt(v);
+            if(s > 0){
+            	return s;
+            } else {
+                JOptionPane.showMessageDialog(null, "Debe ser un valor numerico positivo", "MENSAJE", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Debe ser un valor numerico", "MENSAJE", JOptionPane.WARNING_MESSAGE);
+        }
+        return s;
+	}
+	
+	public static int buscarPRoveedor(String nombre) {
+		int id = -1;
+		String consulta = "select ID_Proveedor from Proveedor where nombre = '" + nombre + "';";
+		conexionBD conec= new conexionBD();
+		Connection conn= conec.conexion();
+		PreparedStatement ps= null;
+		ResultSet rs= null;
+		try {
+			
+			ps=conn.prepareStatement(consulta);
+			rs=ps.executeQuery();
+			if(rs.next()) {
+				id = rs.getInt("ID_Proveedor");
+			}
+			System.out.println("Funciona sql");
+		}catch(Exception e) {
+			 e.printStackTrace();
+		}finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (ps != null) ps.close();
+	            if (conn != null) conn.close();
+	            System.out.println("conexiones cerradas");
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+		return id;
+	}
+	
+	public static int registrarProveedor(String nombre) {
+		int id = 0;
+		try {
+
+            String query = "insert into Proveedor (Nombre) values ('" + nombre + "');";
+
+            try (Connection conn = conexionBD.conexion();
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
+
+                stmt.executeUpdate();
+
+                System.out.println("PRoveedor registrado");
+                id = buscarPRoveedor(nombre);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error al agregar bebida a la base de datos.");
+            }
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Ingrese una cantidad válida.");
+        }
+		return id;
+	}
+	
+	public static ArrayList<String> obtenerDatos (){
+		ArrayList<String> bebidas = new ArrayList<String>();
+		String consulta = "select pr.nombre \r\n"
+				+ "from Producto as pr, Bebidas as be\r\n"
+				+ "where pr.ID_Producto = be.ID_ProductoBebida\r\n;";
+		conexionBD conec= new conexionBD();
+		Connection conn= conec.conexion();
+		PreparedStatement ps= null;
+		ResultSet rs= null;
+		try {
+			
+			ps=conn.prepareStatement(consulta);
+			rs=ps.executeQuery();
+			while(rs.next()) {
+				String nombre = rs.getString("pr.Nombre");
+                bebidas.add(nombre);
+			}
+			System.out.println("Funciona sql");
+		}catch(Exception e) {
+			 e.printStackTrace();
+		}finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (ps != null) ps.close();
+	            if (conn != null) conn.close();
+	            System.out.println("conexiones cerradas");
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+		return bebidas;
+	}
+	
+	public void actualizarTablaBebidas() {
+	    // Obtén el modelo de la tabla
+	    DefaultTableModel modelBebidas = (DefaultTableModel) tblBebidas.getModel();
+	    
+	    // Limpia la tabla antes de llenarla
+	    modelBebidas.setRowCount(0);
+	    
+	    // Itera sobre el ArrayList y agrega las filas
+	    for (String b : bebidas) {
+	        Object[] fila = {
+	            b
+	        };
+	        modelBebidas.addRow(fila); // Añade la fila al modelo
+	    }
+	}
+	
+	public static int obtenerProductoID (String nombre) {
+		int id = 0;
+		String consulta = "select ID_Producto from Producto where nombre = '" + nombre + "';";
+		conexionBD conec= new conexionBD();
+		Connection conn= conec.conexion();
+		PreparedStatement ps= null;
+		ResultSet rs= null;
+		try {
+			
+			ps=conn.prepareStatement(consulta);
+			rs=ps.executeQuery();
+			while(rs.next()) {
+				id = rs.getInt("ID_Producto");
+			}
+			System.out.println("Funciona sql");
+		}catch(Exception e) {
+			 e.printStackTrace();
+		}finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (ps != null) ps.close();
+	            if (conn != null) conn.close();
+	            System.out.println("conexiones cerradas");
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+		return id;
+	}
+	
+	public static void actualizarBD (int prod, int prov, int cant) {
+		conexionBD conec= new conexionBD();
+		Connection conn= conec.conexion();
+		PreparedStatement ps= null;
+		ResultSet rs= null;
+		try {
+			String actualizarFactura = "insert into Pedido (ID_ProductoBebida, ID_Proveedor, Cantidad)\r\n"
+					+ "values (" + prod + ", " + prov + ", " + cant + ");";
+			PreparedStatement ps4= null;
+			ps4 = conn.prepareStatement(actualizarFactura);
+			ps4.executeUpdate();
+			System.out.println("Funciona ps4");
+			
+			String actualizarStock = "update Bebidas set Stock = Stock + " + cant + " where ID_ProductoBebida = " + prod + ";";
+			PreparedStatement ps5= null;
+			ps5 = conn.prepareStatement(actualizarStock);
+			ps5.executeUpdate();
+			System.out.println("Funciona ps5");
+		}catch(Exception e) {
+			 e.printStackTrace();
+		}finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (ps != null) ps.close();
+	            if (conn != null) conn.close();
+	            System.out.println("conexiones cerradas");
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
 	}
 
 }

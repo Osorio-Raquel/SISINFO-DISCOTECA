@@ -213,6 +213,12 @@ public class Regalias extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(regalo.size() > 0) {
 					actualizarBD();
+					JOptionPane.showMessageDialog(null, "Se ha registrado la regalia", "MENSAJE", JOptionPane.INFORMATION_MESSAGE );
+		            
+					DefaultTableModel modelDetalle = (DefaultTableModel) tblDetalle.getModel();
+					modelDetalle.setRowCount(0);
+					regalo.clear();
+					txtCant.setText("");
 				} else {
 					JOptionPane.showMessageDialog(null, "Ningun producto seleccionado", "MENSAJE", JOptionPane.WARNING_MESSAGE);
 

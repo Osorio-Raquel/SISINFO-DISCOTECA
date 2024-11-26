@@ -11,6 +11,7 @@ import Vista.Administrador;
 import Vista.Bartender;
 
 import Vista.Login;
+import Vista.Pedido;
 import Vista.Regalias;
 import Vista.Relacionador;
 import conexionBase.conexionBD;
@@ -19,7 +20,7 @@ public class menuPrincipal {
 
 	public static void main(String[] args) {
 
-		Bartender l = new Bartender();
+		Pedido l = new Pedido();
 		l.setVisible(true);
 	}
 }

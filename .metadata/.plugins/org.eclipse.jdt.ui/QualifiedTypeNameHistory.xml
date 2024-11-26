@@ -11,6 +11,6 @@
     <fullyQualifiedTypeName name="Vista.Administrador"/>
     <fullyQualifiedTypeName name="Vista.Bartender"/>
     <fullyQualifiedTypeName name="Vista.Relacionador"/>
-    <fullyQualifiedTypeName name="java.util.ArrayList"/>
     <fullyQualifiedTypeName name="Modelo.RegaliasD"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
 </qualifiedTypeNameHistroy>
