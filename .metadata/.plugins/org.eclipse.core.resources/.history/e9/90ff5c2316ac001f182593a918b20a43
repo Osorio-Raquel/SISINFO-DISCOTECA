@@ -218,8 +218,7 @@ public class FacturaEnPDF extends ReportePapa{
 		String consulta= "select pr.nombre, dt.cantidad, pr.precio, dt.subtotal\r\n"
 				+ "from Producto as pr, DetalleFactura as dt\r\n"
 				+ "where pr.ID_Producto = dt.ID_Producto\r\n"
-				+ "and  dt.ID_Factura = " + facID + "\r\n"
-				+ "and dt.ID_Reserva = 0;";
+				+ "and  dt.ID_Factura = " + facID + ";";
 		conexionBD conec= new conexionBD();
 		Connection conn= conec.conexion();
 		PreparedStatement ps= null;
@@ -257,13 +256,7 @@ public class FacturaEnPDF extends ReportePapa{
 		String consulta= "select pr.nombre, dt.cantidad, pr.precio, dt.subtotal\r\n"
 				+ "from Producto as pr, DetalleFactura as dt\r\n"
 				+ "where pr.ID_Producto = dt.ID_Producto\r\n"
-				+ "and  dt.ID_Factura = " + facID + ""
-				+ "and pr.ID_Producto = 3;";
-		String consulta2 = "select me.ID_Mesa, me.Costo, dt.Cantidad\r\n"
-				+ "from Mesa as me, DetalleFactura as dt, Reserva as re\r\n"
-				+ "where re.ID_Reserva = dt.ID_Reserva\r\n"
-				+ "and re.ID_Mesa = me.ID_Mesa\r\n"
-				+ "and dt.ID_Factura = " + facID + ";";
+				+ "and  dt.ID_Factura = " + facID + ";";
 		conexionBD conec= new conexionBD();
 		Connection conn= conec.conexion();
 		PreparedStatement ps= null;
@@ -281,19 +274,6 @@ public class FacturaEnPDF extends ReportePapa{
 				inv.add(datos);
 				num++;
 			}
-			PreparedStatement ps1 = null;
-			ResultSet rs1 = null;
-			ps1=conn.prepareStatement(consulta2);
-			rs1 = ps.executeQuery();
-			while(rs.next()) {
-				String nombre = "Mesa " + rs.getString("me.ID_Mesa");
-				double precioU = rs.getDouble("me.Costo");
-				double cantidad = rs.getDouble("dt.cantidad");
-				double subtotal = rs.getDouble("me.Costo");
-				DatosFacturaPDF datos = new DatosFacturaPDF(num, nombre, cantidad, precioU, subtotal);
-				inv.add(datos);
-				num++;
-			}
 		}catch(Exception e) {
 			System.out.println(e);
 		}finally {
@@ -306,8 +286,6 @@ public class FacturaEnPDF extends ReportePapa{
 	            ex.printStackTrace();
 	        }
 	    }
-		
-		
 		return inv;
 	}
 	

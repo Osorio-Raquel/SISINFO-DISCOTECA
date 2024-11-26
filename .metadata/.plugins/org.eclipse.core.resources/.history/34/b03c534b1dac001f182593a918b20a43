@@ -218,8 +218,7 @@ public class FacturaEnPDF extends ReportePapa{
 		String consulta= "select pr.nombre, dt.cantidad, pr.precio, dt.subtotal\r\n"
 				+ "from Producto as pr, DetalleFactura as dt\r\n"
 				+ "where pr.ID_Producto = dt.ID_Producto\r\n"
-				+ "and  dt.ID_Factura = " + facID + "\r\n"
-				+ "and dt.ID_Reserva = 0;";
+				+ "and  dt.ID_Factura = " + facID + ";";
 		conexionBD conec= new conexionBD();
 		Connection conn= conec.conexion();
 		PreparedStatement ps= null;

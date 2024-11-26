@@ -379,7 +379,7 @@ public class Factura extends JFrame {
 			            		    if (rsMax1.next()) {
 			            		        maxIdFactura = rsMax.getInt("MaxFactura");
 			            		    }
-			            		    maxIdFactura++;
+			            		    
 			            		    System.out.println("ID de la factura" + maxIdFactura);
 			            		    FacturaEnPDF fac = new FacturaEnPDF(maxIdFactura, txtNit.getText(), txtRazon.getText());
 			            		    fac.GenerarReporte(Double.parseDouble(txtMonto.getText()), 2);
