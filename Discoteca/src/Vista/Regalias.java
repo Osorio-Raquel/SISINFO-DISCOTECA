@@ -10,6 +10,7 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -17,15 +18,32 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+
+import Modelo.Bebidas;
+import Modelo.DatosVentas;
+import Modelo.RegaliasD;
+import conexionBase.conexionBD;
+
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 
 public class Regalias extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private ArrayList<Bebidas> beb = new ArrayList<Bebidas>();
+	private ArrayList<RegaliasD> regalo = new ArrayList<RegaliasD>();
+	JTable tblBebidas = new JTable();
+	JTable tblDetalle = new JTable();
 
 	public Regalias() {
+		beb = obtenerDatos();
+		
 		setTitle("Regalías");
 		setResizable(false);
 		setBounds(350, 150, 1280, 720);
@@ -70,24 +88,15 @@ public class Regalias extends JFrame {
 		panTable.setBackground(new Color(9, 38, 53));
 		panMenu.add(panTable, BorderLayout.CENTER);
 		
-		JTable tblBebidas = new JTable();
 		tblBebidas.setForeground(new Color(9, 38, 53));
 		tblBebidas.setBackground(new Color(217, 236, 233));
 		tblBebidas.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Bebida", "Disponibilidad", "Precio"
-			}
-		) {
-			Class[] columnTypes = new Class[] {
-				String.class, Integer.class, Double.class
-			};
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		});
-		panTable.add(tblBebidas);
+			    new Object[][] {},
+			    new String[] { "Bebida", "Disponibilidad", "Precio" }
+			));
+		panTable.setViewportView(tblBebidas);
+
+		actualizarTablaBebidas();
 		
 		JPanel panOther = new JPanel();
 		panOther.setBackground(new Color(9, 38, 53));
@@ -116,6 +125,27 @@ public class Regalias extends JFrame {
 		panOther.add(panAgregar);
 		
 		JButton btnAgregar = new JButton("Agregar bebida");
+		btnAgregar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int num = validard(txtCant.getText());
+				if(num > 0) {
+					int selectedIndex = tblBebidas.getSelectedRow();
+					if (selectedIndex != -1) {
+					    actualizarArray(selectedIndex, num);
+					    int ide = beb.get(selectedIndex).getId();
+					    String nom = beb.get(selectedIndex).getNombre();
+					    RegaliasD re = new RegaliasD(ide, nom, num);
+					    regalo.add(re);
+					    
+					    actualizarTablaBebidas();
+					    actualizarTablaDetalle();
+					} else {
+			            JOptionPane.showMessageDialog(null, "Seleccione un producto", "MENSAJE", JOptionPane.WARNING_MESSAGE);
+
+					}
+				}
+			}
+		});
 		btnAgregar.setForeground(new Color(217, 236, 233));
 		btnAgregar.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 22));
 		btnAgregar.setBackground(new Color(0, 198, 176));
@@ -142,22 +172,11 @@ public class Regalias extends JFrame {
 		panTablaDet.setBackground(new Color(9, 38, 53));
 		panDetalle.add(panTablaDet, BorderLayout.CENTER);
 		
-		JTable tblDetalle = new JTable();
 		tblDetalle.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Bebida"
-			}
-		) {
-			Class[] columnTypes = new Class[] {
-				String.class
-			};
-			public Class getColumnClass(int columnIndex) {
-				return columnTypes[columnIndex];
-			}
-		});
-		panTablaDet.add(tblDetalle);
+			    new Object[][] {},
+			    new String[] { "Bebida", "Cantidad"}
+			));
+		panTablaDet.setViewportView(tblDetalle);
 		
 		JPanel panBtn = new JPanel();
 		panBtn.setBackground(new Color(9, 38, 53));
@@ -190,6 +209,16 @@ public class Regalias extends JFrame {
 		panBtn.add(pan2, BorderLayout.EAST);
 		
 		JButton btnRegalar= new JButton("Regalar");
+		btnRegalar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(regalo.size() > 0) {
+					actualizarBD();
+				} else {
+					JOptionPane.showMessageDialog(null, "Ningun producto seleccionado", "MENSAJE", JOptionPane.WARNING_MESSAGE);
+
+				}
+			}
+		});
 		btnRegalar.setForeground(new Color(217, 236, 233));
 		btnRegalar.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btnRegalar.setBackground(new Color(0, 198, 176));
@@ -201,6 +230,138 @@ public class Regalias extends JFrame {
 		
 		setVisible(true);
 	}
+	
+	public static int validard(String v) {
+		int s = 0;
+        try {
+            s = Integer.parseInt(v);
+            if(s > 0){
+            	return s;
+            } else {
+                JOptionPane.showMessageDialog(null, "Debe ser un valor numerico positivo", "MENSAJE", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Debe ser un valor numerico", "MENSAJE", JOptionPane.WARNING_MESSAGE);
+        }
+        return s;
+	}
+	
+	public ArrayList<Bebidas> obtenerDatos (){
+		ArrayList<Bebidas> inv = new ArrayList<>();
+		String consulta = "select pr.ID_Producto, pr.nombre, be.stock, pr.precio\r\n"
+				+ "from Producto as pr, Bebidas as be\r\n"
+				+ "where pr.ID_Producto = be.ID_ProductoBebida\r\n"
+				+ "and be.stock > 0;";
+		conexionBD conec= new conexionBD();
+		Connection conn= conec.conexion();
+		PreparedStatement ps= null;
+		ResultSet rs= null;
+		try {
+			
+			ps=conn.prepareStatement(consulta);
+			rs=ps.executeQuery();
+			int num = 1;
+			while(rs.next()) {
+				int id = rs.getInt("pr.ID_Producto");
+				String nombre = rs.getString("pr.Nombre");
+				int cantidad = rs.getInt("be.stock");
+                double precio = rs.getDouble("pr.precio");
+                Bebidas ped = new Bebidas(id, nombre, cantidad, precio);
+                inv.add(ped);
+				num++;
+			}
+			System.out.println("Funciona sql");
+		}catch(Exception e) {
+			 e.printStackTrace();
+		}finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (ps != null) ps.close();
+	            if (conn != null) conn.close();
+	            System.out.println("conexiones cerradas");
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+		return inv;
+	}
+	
+	public void actualizarBD () {
+		for(Bebidas be : beb) {
+			conexionBD conec= new conexionBD();
+			Connection conn= conec.conexion();
+			PreparedStatement ps= null;
+			ResultSet rs= null;
+			try {
+				String actualizarFactura = "update Bebidas set stock = " + be.getCantidad() + " where ID_ProductoBebida = " + be.getId() + ";";
+				PreparedStatement ps4= null;
+				ps4 = conn.prepareStatement(actualizarFactura);
+				ps4.executeUpdate();
+				System.out.println("Funciona sql");
+			}catch(Exception e) {
+				 e.printStackTrace();
+			}finally {
+		        try {
+		            if (rs != null) rs.close();
+		            if (ps != null) ps.close();
+		            if (conn != null) conn.close();
+		            System.out.println("conexiones cerradas");
+		        } catch (SQLException ex) {
+		            ex.printStackTrace();
+		        }
+		    }
+			
+		}
+	}
+	
 
+	public void actualizarTablaBebidas() {
+	    // Obtén el modelo de la tabla
+	    DefaultTableModel modelBebidas = (DefaultTableModel) tblBebidas.getModel();
+	    
+	    // Limpia la tabla antes de llenarla
+	    modelBebidas.setRowCount(0);
+	    
+	    // Itera sobre el ArrayList y agrega las filas
+	    for (Bebidas bebida : beb) {
+	        Object[] fila = {
+	            bebida.getNombre(),
+	            bebida.getCantidad(),
+	            bebida.getPrecio()
+	        };
+	        System.out.println(bebida.getNombre());
+	        System.out.println(bebida.getCantidad());
+	        System.out.println(bebida.getPrecio());
+	        modelBebidas.addRow(fila); // Añade la fila al modelo
+	    }
+	}
+	
+	public void actualizarTablaDetalle() {
+	    // Obtén el modelo de la tabla
+	    DefaultTableModel modelDetalle = (DefaultTableModel) tblDetalle.getModel();
+	    
+	    // Limpia la tabla antes de llenarla
+	    modelDetalle.setRowCount(0);
+
+	    for (RegaliasD detalle : regalo) {
+	        Object[] fila = {
+	            detalle.getNombre(), // Nombre de la bebida
+	            detalle.getCantidad()      // Cantidad de la bebida
+	        };
+	        modelDetalle.addRow(fila); // Añade la fila al modelo
+	    }
+	}
+
+	
+	public void actualizarArray (int ind, int cant) {
+		if(cant > beb.get(ind).getCantidad()) {
+			JOptionPane.showMessageDialog(null, "Ingrese una cantidad valida", "MENSAJE", JOptionPane.WARNING_MESSAGE);
+	        return;
+		} else {
+			int act = beb.get(ind).getCantidad();
+			beb.get(ind).setCantidad(act - cant);
+		}
+	}
+	
 }
 

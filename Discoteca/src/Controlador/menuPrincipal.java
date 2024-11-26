@@ -18,7 +18,7 @@ import conexionBase.conexionBD;
 public class menuPrincipal {
 
 	public static void main(String[] args) {
-		Reportes l = new Reportes();
+		Regalias l = new Regalias();
 		l.setVisible(true);
 	}
 }

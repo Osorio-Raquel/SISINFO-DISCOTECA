@@ -6,5 +6,11 @@
     <fullyQualifiedTypeName name="Modelo.ReporteVentas"/>
     <fullyQualifiedTypeName name="Modelo.ReportePedido"/>
     <fullyQualifiedTypeName name="Vista.Reportes"/>
+    <fullyQualifiedTypeName name="Vista.Pedido"/>
+    <fullyQualifiedTypeName name="Vista.Regalias"/>
     <fullyQualifiedTypeName name="Vista.Administrador"/>
+    <fullyQualifiedTypeName name="Vista.Bartender"/>
+    <fullyQualifiedTypeName name="Vista.Relacionador"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="Modelo.RegaliasD"/>
 </qualifiedTypeNameHistroy>
