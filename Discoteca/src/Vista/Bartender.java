@@ -208,6 +208,7 @@ public class Bartender extends JFrame {
 
 		                String query = "INSERT INTO Discoteca.DetalleFactura (ID_Factura, ID_Reserva, ID_Producto, Cantidad, Subtotal) " +
 		                               "VALUES (?, ?, ?, ?, ?)";
+		                String queryActualizarStock = "UPDATE Discoteca.Bebidas SET Stock = Stock - ? WHERE ID_ProductoBebida = ?";
 
 		                try (Connection conn = conexionBD.conexion();
 		                     PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -219,11 +220,16 @@ public class Bartender extends JFrame {
 		                    stmt.setDouble(5, subtotal); 
 
 		                    stmt.executeUpdate();
+		                    try (PreparedStatement stmtStock = conn.prepareStatement(queryActualizarStock)) {
+		                        stmtStock.setInt(1, cantidad); 
+		                        stmtStock.setInt(2, idProducto); 
+		                        stmtStock.executeUpdate();
+		                    }
 
 		                    txtCant.setText("");
 		                    
 		                    actualizarTablaDetalle();
-
+		                    		 
 		                    JOptionPane.showMessageDialog(null, "Bebida agregada a la factura.");
 		                } catch (SQLException ex) {
 		                    ex.printStackTrace();
