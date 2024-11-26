@@ -16,30 +16,18 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import Modelo.ReporteInventario;
+import Modelo.ReportePedido;
+import Modelo.ReporteVentas;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
 public class Reportes extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Reportes frame = new Reportes();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
+	
 	public Reportes() {
 		setTitle("Reportes");
 		setResizable(false);
@@ -89,18 +77,36 @@ public class Reportes extends JFrame {
 		panMenu.setLayout(new GridLayout(5, 1, 0, 50));
 		
 		JButton btn1 = new JButton("Reporte de ventas");
+		btn1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReporteVentas rev = new ReporteVentas();
+				rev.GenerarReporte();
+			}
+		});
 		btn1.setForeground(new Color(217, 236, 233));
 		btn1.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btn1.setBackground(new Color(0, 198, 176));
 		panMenu.add(btn1);
 		
 		JButton btn2 = new JButton("Reporte de inventario");
+		btn2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReporteInventario re = new ReporteInventario();
+				re.GenerarReporte();
+			}
+		});
 		btn2.setForeground(new Color(217, 236, 233));
 		btn2.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btn2.setBackground(new Color(0, 198, 176));
 		panMenu.add(btn2);
 		
 		JButton btn3 = new JButton("Reporte de pedidos");
+		btn3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReportePedido rep = new ReportePedido();
+				rep.GenerarReporte();
+			}
+		});
 		btn3.setForeground(new Color(217, 236, 233));
 		btn3.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btn3.setBackground(new Color(0, 198, 176));
@@ -115,6 +121,13 @@ public class Reportes extends JFrame {
 		panel.add(panLogout, BorderLayout.SOUTH);
 		
 		JButton btnLogout = new JButton("Volver");
+		btnLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Administrador admin = new Administrador();
+				admin.setVisible(true);
+				dispose();
+			}
+		});
 		btnLogout.setForeground(new Color(217, 236, 233));
 		btnLogout.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btnLogout.setBackground(new Color(0, 198, 176));

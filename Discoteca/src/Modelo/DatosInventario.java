@@ -3,13 +3,7 @@ package Modelo;
 import java.time.LocalDate;
 
 public class DatosInventario extends DatosPadre{
-	public String categoria;
-	public double stock;
-	public LocalDate fechaVencimiento;
-	
-	public void setCategoria(String categoria) {
-		this.categoria = categoria;
-	}
+	public int stock;
 	
 	@Override
 	public void setNombre(String nombre) {
@@ -23,12 +17,8 @@ public class DatosInventario extends DatosPadre{
 		super.setNumero(numero);
 	}
 	
-	public void setStock(double stock) {
+	public void setStock(int stock) {
 		this.stock = stock;
-	}
-	
-	public String getCategoria() {
-		return categoria;
 	}
 	
 	@Override
@@ -44,22 +34,12 @@ public class DatosInventario extends DatosPadre{
 	}
 	
 	
-	public double getStock() {
+	public int getStock() {
 		return stock;
 	}
 	
-	public LocalDate getFechaVencimiento() {
-		return fechaVencimiento;
-	}
-	
-	public void setFechaVencimiento(LocalDate fechaVencimiento) {
-		this.fechaVencimiento = fechaVencimiento;
-	}
-	
-	public DatosInventario (String categoria, int numero, String nombre, double stock, LocalDate fechaVencimiento) {
+	public DatosInventario (int numero, String nombre, int stock) {
 		super(numero, nombre);
-		this.categoria = categoria;
 		this.stock = stock;
-		this.fechaVencimiento = fechaVencimiento;
 	}
 }

@@ -39,14 +39,6 @@ public class ReportePapa {
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cell);
     }
-    
-    public void addTableCellRed(PdfPTable table, String text) {
-        PdfPCell cell = new PdfPCell();
-        cell.setPhrase(new Phrase(text));
-        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        cell.setBackgroundColor(BaseColor.RED); // Establece el fondo rojo
-        table.addCell(cell);
-    }
 
     
     public void GenerarReporte() {

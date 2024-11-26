@@ -37,8 +37,8 @@ public class ReportePedido extends ReportePapa{
 		super();
 	}
 	
-	public void GenerarReporte(LocalDate fechaInicio, LocalDate fechaFin) {
-        String dest = "ReportePedidos.pdf";
+	public void GenerarReporte() {
+        String dest = "Pedidos.pdf";
         
         Document document = new Document();
 
@@ -47,55 +47,48 @@ public class ReportePedido extends ReportePapa{
 
             document.open();
             
-            String imagePath = "C:\\Documentos\\imag\\logo330x200.png";
+            String imagePath = "C:\\\\Documentos\\\\Imagenes\\\\logo.jpg";
             Image imagen = Image.getInstance(imagePath);
             imagen.scaleToFit(100, 100);
             imagen.setAbsolutePosition(10, document.getPageSize().getHeight() - imagen.getScaledHeight() - 10);
             document.add(imagen);
+            
+            Paragraph espaciador = new Paragraph(" ");
+            espaciador.setSpacingBefore(10);
+            document.add(espaciador);
+            document.add(espaciador);
 
             Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD, BaseColor.BLUE);
             Paragraph title = new Paragraph("Reporte de Pedidos", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
             
-            Paragraph espaciador = new Paragraph(" ");
-            espaciador.setSpacingBefore(10);
             document.add(espaciador);
             
             Font fechayHora = new Font(Font.FontFamily.HELVETICA, 14, Font.NORMAL);
             Paragraph fechaReporte = new Paragraph("Fecha de Reporte: " + Fechita() + "            Hora de Reporte:" + horita(), fechayHora);
             document.add(fechaReporte);
             
-            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            String fechaActualStrI = fechaInicio.format(formato);
-            String fechaActualStrF = fechaFin.format(formato);
             
-            
-            document.add(espaciador);
-            
-            Paragraph intervaloInforme = new Paragraph("Reporte del: " + fechaActualStrI + " al " + fechaActualStrF, fechayHora);
-            document.add(intervaloInforme);
             
             document.add(espaciador);
 
-            PdfPTable table = new PdfPTable(5);
+            PdfPTable table = new PdfPTable(4);
             table.setWidthPercentage(100);
 
             Font headerFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
 
             addTableHeader(table, headerFont, "Número");
-            addTableHeader(table, headerFont, "Producto");
-            addTableHeader(table, headerFont, "Fecha");
+            addTableHeader(table, headerFont, "Nombre");
             addTableHeader(table, headerFont, "Cantidad");
             addTableHeader(table, headerFont, "Total");
             
             ArrayList<PedidosDatos> inv = new ArrayList<>();
-            inv = obtenerDatos(fechaInicio, fechaFin);
+            inv = obtenerDatos();
             
             for(PedidosDatos d : inv) {
             	addTableCell(table, "" + d.getNumero());
                 addTableCell(table, "" + d.getNombre());
-                addTableCell(table, d.getFecha());
                 addTableCell(table, "" + d.getCantidad());
                 addTableCell(table, "" + d.getCosto());
             }
@@ -103,7 +96,6 @@ public class ReportePedido extends ReportePapa{
             double suma = SumaTotal(inv);
             
             addTableCell(table, "TOTAL");
-            addTableCell(table, "");
             addTableCell(table, "");
             addTableCell(table, "");
             addTableCell(table, "" + suma);
@@ -153,34 +145,25 @@ public class ReportePedido extends ReportePapa{
 		return suma;
 	}
 	
-	private static ArrayList<PedidosDatos> obtenerDatos (LocalDate inicio, LocalDate fin){
+	private static ArrayList<PedidosDatos> obtenerDatos (){
 		ArrayList<PedidosDatos> inv = new ArrayList<>();
-		String consulta = "SELECT productos.nombre, productos.precio_compra, pedidosReporte.fecha, pedidosReporte.cantidad " +
-                "FROM productos, pedidosReporte " +
-                "WHERE productos.ID_producto = pedidosReporte.id_producto " +
-                "AND (pedidosReporte.fecha >= ? AND pedidosReporte.fecha <= ?)"
-                + "ORDER BY pedidosReporte.fecha;";
+		String consulta = "select pr.nombre, pe.cantidad, (pe.cantidad * beb.PrecioCompra) as precio\r\n"
+				+ "from Producto as pr, Pedido as pe, Bebidas as beb\r\n"
+				+ "where pr.ID_Producto = beb.ID_ProductoBebida\r\n"
+				+ "and beb.ID_ProductoBebida = pe.ID_ProductoBebida;";
 		conexionBD conec= new conexionBD();
 		Connection conn= conec.conexion();
 		PreparedStatement ps= null;
 		ResultSet rs= null;
 		try {
 			ps=conn.prepareStatement(consulta);
-			ps.setString(1, inicio.format(DateTimeFormatter.ISO_LOCAL_DATE));
-			ps.setString(2, fin.format(DateTimeFormatter.ISO_LOCAL_DATE));
 			rs=ps.executeQuery();
 			int num = 1;
 			while(rs.next()) {
-				String nombre = rs.getString("nombre");
-                double precioCompra = rs.getDouble("precio_compra");
-                Date fecha = rs.getDate("fecha");
-                LocalDate fechaLocal = fecha.toLocalDate();
-                fechaLocal = fechaLocal.plusDays(1);
-                DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                String fechaActualStr = fechaLocal.format(formato);
+				String nombre = rs.getString("pr.nombre");
+                int precioCompra = rs.getInt("precio");
                 int cantidad = rs.getInt("cantidad");
-                double total = precioCompra * cantidad;
-                PedidosDatos ped = new PedidosDatos(num, nombre, cantidad, fechaActualStr, total);
+                PedidosDatos ped = new PedidosDatos(num, nombre, cantidad, precioCompra);
                 inv.add(ped);
 				num++;
 			}

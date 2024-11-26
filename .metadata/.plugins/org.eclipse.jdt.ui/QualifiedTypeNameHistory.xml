@@ -2,4 +2,9 @@
 <qualifiedTypeNameHistroy>
     <fullyQualifiedTypeName name="conexionBase.conexionBD"/>
     <fullyQualifiedTypeName name="Vista.login"/>
+    <fullyQualifiedTypeName name="Modelo.ReporteInventario"/>
+    <fullyQualifiedTypeName name="Modelo.ReporteVentas"/>
+    <fullyQualifiedTypeName name="Modelo.ReportePedido"/>
+    <fullyQualifiedTypeName name="Vista.Reportes"/>
+    <fullyQualifiedTypeName name="Vista.Administrador"/>
 </qualifiedTypeNameHistroy>

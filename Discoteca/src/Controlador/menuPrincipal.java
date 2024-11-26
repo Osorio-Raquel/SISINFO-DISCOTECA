@@ -11,12 +11,14 @@ import Vista.Administrador;
 import Vista.Bartender;
 
 import Vista.Login;
+import Vista.Regalias;
+import Vista.Relacionador;
 import conexionBase.conexionBD;
 
 public class menuPrincipal {
 
 	public static void main(String[] args) {
-		Login l = new Login();
+		Reportes l = new Reportes();
 		l.setVisible(true);
 	}
 }

@@ -78,6 +78,13 @@ public class Administrador extends JFrame {
 		panMenu.add(btn1);
 		
 		JButton btn2 = new JButton("Reportes");
+		btn2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Reportes repp = new Reportes();
+				repp.setVisible(true);
+				dispose();
+			}
+		});
 		btn2.setForeground(new Color(217, 236, 233));
 		btn2.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btn2.setBackground(new Color(0, 198, 176));

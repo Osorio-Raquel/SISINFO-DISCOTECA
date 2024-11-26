@@ -67,13 +67,10 @@ public class verificacionCorreo {
 	        if (rs.next()) {
 	            String cargo = rs.getString("ID_Cargo");
 	            if (cargo.equals("1")) {
-	            	System.out.println(cargo);
 	                return 1;
 	            } else if (cargo.equals("2")) {
-	            	System.out.println(cargo);
 	                return 2;
 	            } else if (cargo.equals("3")) {
-	            	System.out.println(cargo);
 	                return 3;
 	            }
 	        }

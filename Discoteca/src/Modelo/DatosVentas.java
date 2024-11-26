@@ -1,8 +1,6 @@
 package Modelo;
 
 public class DatosVentas extends DatosPadre{
-	public String nit;
-	public String fecha;
 	public double ganancia;
 	
 	@Override
@@ -17,17 +15,11 @@ public class DatosVentas extends DatosPadre{
 		super.setNumero(numero);
 	}
 	
-	public void setFecha(String fecha) {
-		this.fecha = fecha;
-	}
 	
 	public void setGanancia(double ganancia) {
 		this.ganancia = ganancia;
 	}
 	
-	public void setNit(String nit) {
-		this.nit = nit;
-	}
 	
 	@Override
 	public String getNombre() {
@@ -41,22 +33,14 @@ public class DatosVentas extends DatosPadre{
 		return super.getNumero();
 	}
 	
-	public String getFecha() {
-		return fecha;
-	}
 	
 	public double getGanancia() {
 		return ganancia;
 	}
 	
-	public String getNit() {
-		return nit;
-	}
 	
-	public DatosVentas(int numero, String nombre, String nit, String fecha, double ganancia) {
+	public DatosVentas(int numero, String nombre, double ganancia) {
 		super(numero, nombre);
-		this.nit = nit;
-		this.fecha = fecha;
 		this.ganancia = ganancia;
 	}
 }

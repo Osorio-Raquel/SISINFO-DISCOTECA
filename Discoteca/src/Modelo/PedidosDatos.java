@@ -3,17 +3,13 @@ package Modelo;
 import java.time.LocalDate;
 
 public class PedidosDatos extends DatosPadre{
-	public double cantidad;
-	public String fecha;
+	public int cantidad;
 	public double costo;
 	
-	public void setCantidad(double cantidad) {
+	public void setCantidad(int cantidad) {
 		this.cantidad = cantidad;
 	}
 	
-	public void setFecha(String fecha) {
-		this.fecha = fecha;
-	}
 	
 	@Override
 	public void setNombre(String nombre) {
@@ -31,13 +27,10 @@ public class PedidosDatos extends DatosPadre{
 		this.costo = costo;
 	}
 	
-	public double getCantidad() {
+	public int getCantidad() {
 		return cantidad;
 	}
 	
-	public String getFecha() {
-		return fecha;
-	}
 	
 	@Override
 	public String getNombre() {
@@ -55,10 +48,9 @@ public class PedidosDatos extends DatosPadre{
 		return costo;
 	}
 	
-	public PedidosDatos (int numero, String nombre, double cantidad, String fecha, double costo) {
+	public PedidosDatos (int numero, String nombre, int cantidad, double costo) {
 		super(numero, nombre);
 		this.cantidad = cantidad;
-		this.fecha = fecha;
 		this.costo = costo;
 	}
 	
