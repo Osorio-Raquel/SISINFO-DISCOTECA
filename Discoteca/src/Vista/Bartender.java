@@ -384,7 +384,7 @@ public class Bartender extends JFrame {
 		            } catch (SQLException ex) {
 		                ex.printStackTrace();
 		            }
-		        Factura l = new Factura(nuevoIdFactura);
+		        Factura l = new Factura(1);
 		        l.setVisible(true);    
 		        dispose();  
 		        }
