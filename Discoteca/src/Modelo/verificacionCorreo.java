@@ -20,7 +20,6 @@ public class verificacionCorreo {
 		ResultSet rs=null;
 		String consulta= "SELECT ID_Empleado, Estado from Empleado WHERE Usuario= '"+ Correo + "'";
 		try {
-			System.out.println("entra al try");
 			ps=conn.prepareStatement(consulta);
 			rs=ps.executeQuery();
 			if(rs.next()) {
@@ -50,7 +49,6 @@ public class verificacionCorreo {
 	            if (rs != null) rs.close();
 	            if (ps != null) ps.close();
 	            if (conn != null) conn.close();
-	            System.out.println("conexiones cerradas");
 	        } catch (SQLException ex) {
 	            ex.printStackTrace();
 	        }

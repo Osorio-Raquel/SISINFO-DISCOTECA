@@ -58,14 +58,14 @@ public class VentasFactura {
 				double cant = Cantidad.get(i);
 				double subtotal = cant * precio;
 				totalEsteSi += subtotal;
-				String compras = "INSERT INTO producto_factura (ID_producto, id_factura, cantidad, Subtotal) "
-						+ "values(" + productoid + "," + facturaID + "," + cant + "," + subtotal + ");";
+				String compras = "INSERT INTO DetalleFactura (ID_Factura, ID_Reserva, ID_Producto, Cantidad, Subtotal) \r\n"
+						+ "values(\" + facturaID + \", 0, \" + productoid + \",\" + cant + \",\" + subtotal + \");";
 				PreparedStatement ps3= null;
 				ps3 = conn.prepareStatement(compras);
 				ps3.executeUpdate();
 			}
 			
-			String actualizarFactura = "UPDATE factura SET total = " + totalEsteSi + "WHERE id_factura = "+facturaID+";";
+			String actualizarFactura = "UPDATE Factura SET Total = \" + totalEsteSi + \"WHERE ID_Factura = \"+facturaID+\";";
 			PreparedStatement ps4= null;
 			ps4 = conn.prepareStatement(actualizarFactura);
 			ps4.executeUpdate();

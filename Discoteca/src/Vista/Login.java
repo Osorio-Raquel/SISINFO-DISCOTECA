@@ -5,10 +5,14 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import Modelo.verificacionCorreo;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import java.awt.Font;
 import java.awt.Color;
@@ -19,6 +23,8 @@ import java.awt.Image;
 
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Login extends JFrame {
 
@@ -27,25 +33,6 @@ public class Login extends JFrame {
 	private JTextField txtUser;
 	private JTextField txtPass;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Login frame = new Login();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
 	public Login() {
 		setTitle("Inicio de sesión");
 		setResizable(false);
@@ -119,6 +106,41 @@ public class Login extends JFrame {
 		panBtn.setLayout(fl_panBtn);
 		
 		JButton btnLogin = new JButton("Iniciar sesión");
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				verificacionCorreo ver1= new verificacionCorreo();
+                String contrasena= new String(txtPass.getText());
+                try {
+                    if(ver1.verificador(txtUser.getText(), contrasena)) {
+                        JOptionPane.showMessageDialog(null, "ingreso permitido");
+                        int cargoo = ver1.verificadorTipo(txtUser.getText());
+                        if(cargoo == 1) {
+                        	Administrador ger = new Administrador();
+                        	ger.setVisible(true);
+                        	dispose();
+                        }else if(cargoo == 2) {
+                        	Bartender bar = new Bartender();
+                            bar.setVisible(true);
+                            dispose();
+                        } else if(cargoo == 3) {
+                        	Relacionador rel = new Relacionador();
+                        	rel.setVisible(true);
+                            dispose();
+                        }
+                        txtUser.setText("");
+                        txtPass.setText("");
+               
+                    }else {
+                        JOptionPane.showMessageDialog(null, "ingreso denegado");
+                    }
+                }catch(Exception error) {
+                	System.out.println(error);
+                }
+
+                txtUser.setText("");
+                txtPass.setText("");
+			}
+		});
 		btnLogin.setForeground(new Color(217, 236, 233));
 		btnLogin.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btnLogin.setBackground(new Color(0, 198, 176));

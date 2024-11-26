@@ -16,32 +16,15 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Relacionador extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTable tblMesas;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Relacionador frame = new Relacionador();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
+	
 	public Relacionador() {
 		setTitle("Relacionador");
 		setResizable(false);
@@ -212,6 +195,13 @@ public class Relacionador extends JFrame {
 		panBtn.add(pan1, BorderLayout.WEST);
 		
 		JButton btnSalir = new JButton("Salir");
+		btnSalir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Login l = new Login ();
+				l.setVisible(true);
+				dispose();
+			}
+		});
 		btnSalir.setForeground(new Color(217, 236, 233));
 		btnSalir.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btnSalir.setBackground(new Color(0, 198, 176));
