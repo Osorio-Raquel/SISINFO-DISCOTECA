@@ -20,8 +20,6 @@ import javax.swing.SwingConstants;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Factura extends JFrame {
 
@@ -31,7 +29,7 @@ public class Factura extends JFrame {
 	private JTextField txtRazon;
 	private JTextField txtMonto;
 	
-	public Factura(int volv) {
+	public Factura() {
 		setTitle("Factura");
 		setResizable(false);
 		setBounds(350, 150, 1280, 720);
@@ -204,21 +202,6 @@ public class Factura extends JFrame {
 		panBtn.add(pan2, BorderLayout.EAST);
 		
 		JButton btnFacturar = new JButton("Facturar");
-		btnFacturar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				
-				if(volv == 1) {
-					Bartender bar = new Bartender();
-					bar.setVisible(true);
-					dispose();
-				} else {
-					Relacionador rel = new Relacionador();
-					rel.setVisible(true);
-					dispose();
-				}
-			}
-		});
 		btnFacturar.setForeground(new Color(217, 236, 233));
 		btnFacturar.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
 		btnFacturar.setBackground(new Color(0, 198, 176));
