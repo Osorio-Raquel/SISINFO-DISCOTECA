@@ -20,7 +20,7 @@ public class menuPrincipal {
 
 	public static void main(String[] args) {
 
-		Administrador l = new Administrador();
+		Login l = new Login();
 		l.setVisible(true);
 	}
 }

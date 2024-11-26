@@ -7,15 +7,23 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+
+import conexionBase.conexionBD;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
 public class Administrador extends JFrame {
@@ -97,18 +105,46 @@ public class Administrador extends JFrame {
 		btn2.setBackground(new Color(0, 198, 176));
 		panMenu.add(btn2);
 		
-		JButton btn3 = new JButton("Regalías");
-		btn3.addActionListener(new ActionListener() {
+		JButton btnMesas = new JButton("Actualizar mesas");
+		btnMesas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Regalias re = new Regalias();
-				re.setVisible(true);
-				dispose();
+				conexionBD conec= new conexionBD();
+				Connection conn= conec.conexion();
+				PreparedStatement ps= null;
+				ResultSet rs= null;
+				try {
+					String actualizarFactura = "update Mesa set Estado = true;";
+					PreparedStatement ps4= null;
+					ps4 = conn.prepareStatement(actualizarFactura);
+					ps4.executeUpdate();
+					System.out.println("Funciona sql");
+				}catch(Exception ex) {
+					 ex.printStackTrace();
+				}finally {
+			        try {
+			            if (rs != null) rs.close();
+			            if (ps != null) ps.close();
+			            if (conn != null) conn.close();
+			            System.out.println("conexiones cerradas");
+			        } catch (SQLException ex) {
+			            ex.printStackTrace();
+			        }
+			    }
+				
+				JOptionPane.showMessageDialog(null, "Mesas actualizadas con exito.");
+				
 			}
 		});
-		btn3.setForeground(new Color(217, 236, 233));
-		btn3.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
-		btn3.setBackground(new Color(0, 198, 176));
-		panMenu.add(btn3);
+		
+		JButton btn3_1 = new JButton("Regalías");
+		btn3_1.setForeground(new Color(217, 236, 233));
+		btn3_1.setFont(new Font("Dialog", Font.BOLD, 26));
+		btn3_1.setBackground(new Color(0, 198, 176));
+		panMenu.add(btn3_1);
+		btnMesas.setForeground(new Color(217, 236, 233));
+		btnMesas.setFont(new Font("UD Digi Kyokasho N-B", Font.BOLD, 26));
+		btnMesas.setBackground(new Color(0, 198, 176));
+		panMenu.add(btnMesas);
 		
 		JPanel panLogout = new JPanel();
 		panLogout.setBorder(new EmptyBorder(0, 0, 25, 0));

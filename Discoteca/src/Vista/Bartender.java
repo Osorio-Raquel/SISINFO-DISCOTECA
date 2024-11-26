@@ -109,7 +109,8 @@ public class Bartender extends JFrame {
 		try {
 		    String query = "SELECT pr.ID_Producto, pr.Nombre, b.stock, pr.precio " +
 		                   "FROM Discoteca.Producto AS pr " +
-		                   "JOIN Discoteca.Bebidas AS b ON b.ID_ProductoBebida = pr.ID_Producto";
+		                   "JOIN Discoteca.Bebidas AS b ON b.ID_ProductoBebida = pr.ID_Producto " +
+		                   "where pr.ID_Producto != 3";
 
 		    conexionBD conec = new conexionBD();
 		    Connection conn = conec.conexion();

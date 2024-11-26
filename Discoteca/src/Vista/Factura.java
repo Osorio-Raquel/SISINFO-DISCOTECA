@@ -204,55 +204,124 @@ public class Factura extends JFrame {
 		lblCostoTotal.setHorizontalAlignment(SwingConstants.RIGHT);
 
 		DefaultTableModel model = (DefaultTableModel) tblDetalle.getModel();
-		model.setRowCount(0); 
-
-		String queryIdMax = "SELECT MAX(ID_Factura) AS MaxFactura FROM DetalleFactura";
-
-		String queryDetalles = "SELECT df.ID_Producto, p.Nombre, df.Cantidad, df.Subtotal " +
-		                       "FROM DetalleFactura df " +
-		                       "JOIN Producto p ON df.ID_Producto = p.ID_Producto " +
-		                       "WHERE df.ID_Factura = ?";
 		conexionBD conec= new conexionBD();
-
-		try (Connection conn = conec.conexion();
-		     Statement stmt = conn.createStatement()) {
-
-		    ResultSet rsMax = stmt.executeQuery(queryIdMax);
-		    int maxIdFactura = -1;
-		    if (rsMax.next()) {
-		        maxIdFactura = rsMax.getInt("MaxFactura");
-		    }
-
-		    if (maxIdFactura == -1) {
-		        JOptionPane.showMessageDialog(null, "No hay facturas en la base de datos.");
-		        return;
-		    }
-		    double costoTotal = 0.0; 
-
-
-		    try (PreparedStatement pstmt = conn.prepareStatement(queryDetalles)) {
-		        pstmt.setInt(1, maxIdFactura); 
-		        ResultSet rsDetalles = pstmt.executeQuery();
-
-		        while (rsDetalles.next()) {
-		            String concepto = rsDetalles.getString("Nombre");
-		            int cantidad = rsDetalles.getInt("Cantidad");
-		            double costo = rsDetalles.getDouble("Subtotal");
-		            costoTotal += costo; 
-
-		            model.addRow(new Object[]{concepto, cantidad, costo});
-		        }
-		    }
-		    lblCostoTotal.setText(String.format("Costo Total: $%.2f", costoTotal));
-
-		    tblDetalle.revalidate();
-		    tblDetalle.repaint();
-
-		} catch (SQLException ex) {
-		    ex.printStackTrace();
-		    JOptionPane.showMessageDialog(null, "Error al cargar los detalles de la factura.");
+		model.setRowCount(0); 
+		if(volv == 1) {
+			String queryIdMax = "SELECT MAX(ID_Factura) AS MaxFactura FROM DetalleFactura";
+	
+			String queryDetalles = "SELECT df.ID_Producto, p.Nombre, df.Cantidad, df.Subtotal " +
+			                       "FROM DetalleFactura df " +
+			                       "JOIN Producto p ON df.ID_Producto = p.ID_Producto " +
+			                       "WHERE df.ID_Factura = ?";
+			
+	
+			try (Connection conn = conec.conexion();
+			     Statement stmt = conn.createStatement()) {
+	
+			    ResultSet rsMax = stmt.executeQuery(queryIdMax);
+			    int maxIdFactura = -1;
+			    if (rsMax.next()) {
+			        maxIdFactura = rsMax.getInt("MaxFactura");
+			    }
+	
+			    if (maxIdFactura == -1) {
+			        JOptionPane.showMessageDialog(null, "No hay facturas en la base de datos.");
+			        return;
+			    }
+			    double costoTotal = 0.0; 
+	
+	
+			    try (PreparedStatement pstmt = conn.prepareStatement(queryDetalles)) {
+			        pstmt.setInt(1, maxIdFactura); 
+			        ResultSet rsDetalles = pstmt.executeQuery();
+	
+			        while (rsDetalles.next()) {
+			            String concepto = rsDetalles.getString("Nombre");
+			            int cantidad = rsDetalles.getInt("Cantidad");
+			            double costo = rsDetalles.getDouble("Subtotal");
+			            costoTotal += costo; 
+	
+			            model.addRow(new Object[]{concepto, cantidad, costo});
+			        }
+			    }
+			    lblCostoTotal.setText(String.format("Costo Total: $%.2f", costoTotal));
+	
+			    tblDetalle.revalidate();
+			    tblDetalle.repaint();
+	
+			} catch (SQLException ex) {
+			    ex.printStackTrace();
+			    JOptionPane.showMessageDialog(null, "Error al cargar los detalles de la factura.");
+			}
+		} else {
+			String queryIdMax = "SELECT MAX(ID_Factura) AS MaxFactura FROM DetalleFactura";
+			
+			String queryDetalles = "SELECT df.ID_Producto, p.Nombre, df.Cantidad, df.Subtotal " +
+			                       "FROM DetalleFactura df " +
+			                       "JOIN Producto p ON df.ID_Producto = p.ID_Producto " +
+			                       "WHERE df.ID_Factura = ? " + 
+			                       "and p.ID_Producto = 3";
+			
+	
+			try (Connection conn = conec.conexion();
+			     Statement stmt = conn.createStatement()) {
+	
+			    ResultSet rsMax = stmt.executeQuery(queryIdMax);
+			    int maxIdFactura = -1;
+			    if (rsMax.next()) {
+			        maxIdFactura = rsMax.getInt("MaxFactura");
+			    }
+	
+			    if (maxIdFactura == -1) {
+			        JOptionPane.showMessageDialog(null, "No hay facturas en la base de datos.");
+			        return;
+			    }
+			    double costoTotal = 0.0; 
+	
+	
+			    try (PreparedStatement pstmt = conn.prepareStatement(queryDetalles)) {
+			        pstmt.setInt(1, maxIdFactura); 
+			        ResultSet rsDetalles = pstmt.executeQuery();
+	
+			        while (rsDetalles.next()) {
+			            String concepto = rsDetalles.getString("Nombre");
+			            int cantidad = rsDetalles.getInt("Cantidad");
+			            double costo = rsDetalles.getDouble("Subtotal");
+			            costoTotal += costo; 
+	
+			            model.addRow(new Object[]{concepto, cantidad, costo});
+			        }
+			    }
+			    
+			    String queryDetallesMesas = "select me.ID_Mesa, me.Costo, dt.Cantidad\r\n"
+						+ "from Mesa as me, DetalleFactura as dt, Reserva as re\r\n"
+						+ "where re.ID_Reserva = dt.ID_Reserva\r\n"
+						+ "and re.ID_Mesa = me.ID_Mesa\r\n"
+						+ "and dt.ID_Factura = ?;";
+			    
+			    try (PreparedStatement pstmt = conn.prepareStatement(queryDetallesMesas)) {
+			        pstmt.setInt(1, maxIdFactura); 
+			        ResultSet rsDetalles = pstmt.executeQuery();
+	
+			        while (rsDetalles.next()) {
+			            String concepto = "Mesa " + rsDetalles.getInt("ID_Mesa");
+			            int cantidad = rsDetalles.getInt("Cantidad");
+			            double costo = rsDetalles.getDouble("Costo");
+			            costoTotal += costo; 
+	
+			            model.addRow(new Object[]{concepto, cantidad, costo});
+			        }
+			    }
+			    lblCostoTotal.setText(String.format("Costo Total: $%.2f", costoTotal));
+	
+			    tblDetalle.revalidate();
+			    tblDetalle.repaint();
+	
+			} catch (SQLException ex) {
+			    ex.printStackTrace();
+			    JOptionPane.showMessageDialog(null, "Error al cargar los detalles de la factura.");
+			}
 		}
-		
 
 		panDetalle.add(lblCostoTotal, BorderLayout.SOUTH); 
 		JPanel panBtn = new JPanel();

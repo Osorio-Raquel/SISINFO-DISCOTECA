@@ -555,7 +555,7 @@ public class Relacionador extends JFrame {
 		            } catch (SQLException ex) {
 		                ex.printStackTrace();
 		            }
-		        Factura l = new Factura(1);
+		        Factura l = new Factura(2);
 		        l.setVisible(true);    
 		        dispose();  
 		        }

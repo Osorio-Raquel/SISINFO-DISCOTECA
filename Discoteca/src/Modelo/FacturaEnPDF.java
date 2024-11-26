@@ -257,9 +257,9 @@ public class FacturaEnPDF extends ReportePapa{
 		String consulta= "select pr.nombre, dt.cantidad, pr.precio, dt.subtotal\r\n"
 				+ "from Producto as pr, DetalleFactura as dt\r\n"
 				+ "where pr.ID_Producto = dt.ID_Producto\r\n"
-				+ "and  dt.ID_Factura = " + facID + ""
+				+ "and  dt.ID_Factura = " + facID + "\r\n"
 				+ "and pr.ID_Producto = 3;";
-		String consulta2 = "select me.ID_Mesa, me.Costo, dt.Cantidad\r\n"
+		String consulta2 = "select me.ID_Mesa as nombre, me.Costo as precio, dt.Cantidad as cant\r\n"
 				+ "from Mesa as me, DetalleFactura as dt, Reserva as re\r\n"
 				+ "where re.ID_Reserva = dt.ID_Reserva\r\n"
 				+ "and re.ID_Mesa = me.ID_Mesa\r\n"
@@ -272,6 +272,7 @@ public class FacturaEnPDF extends ReportePapa{
 			ps=conn.prepareStatement(consulta);
 			rs=ps.executeQuery();
 			int num = 1;
+			System.out.println("Ejecuta query 1 pdf");
 			while(rs.next()) {
 				String nombre = rs.getString("pr.nombre");
 				double precioU = rs.getDouble("pr.precio");
@@ -284,16 +285,19 @@ public class FacturaEnPDF extends ReportePapa{
 			PreparedStatement ps1 = null;
 			ResultSet rs1 = null;
 			ps1=conn.prepareStatement(consulta2);
-			rs1 = ps.executeQuery();
-			while(rs.next()) {
-				String nombre = "Mesa " + rs.getString("me.ID_Mesa");
-				double precioU = rs.getDouble("me.Costo");
-				double cantidad = rs.getDouble("dt.cantidad");
-				double subtotal = rs.getDouble("me.Costo");
+			rs1 = ps1.executeQuery();
+			System.out.println("Ejecuta query 2 pdf");
+			while(rs1.next()) {
+				String nombre = "Mesa " + rs1.getString("nombre");
+				double precioU = rs1.getDouble("precio");
+				double cantidad = rs1.getDouble("cant");
+				double subtotal = rs1.getDouble("precio");
 				DatosFacturaPDF datos = new DatosFacturaPDF(num, nombre, cantidad, precioU, subtotal);
 				inv.add(datos);
+				System.out.println("Vuelta " + num);
 				num++;
 			}
+			
 		}catch(Exception e) {
 			System.out.println(e);
 		}finally {
