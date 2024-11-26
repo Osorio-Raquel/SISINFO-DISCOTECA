@@ -18,7 +18,11 @@ import conexionBase.conexionBD;
 public class menuPrincipal {
 
 	public static void main(String[] args) {
+<<<<<<< Updated upstream
 		Regalias l = new Regalias();
+=======
+		Bartender l = new Bartender();
+>>>>>>> Stashed changes
 		l.setVisible(true);
 	}
 }
