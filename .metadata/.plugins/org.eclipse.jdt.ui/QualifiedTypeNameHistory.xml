@@ -13,4 +13,5 @@
     <fullyQualifiedTypeName name="Vista.Relacionador"/>
     <fullyQualifiedTypeName name="Modelo.RegaliasD"/>
     <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="Modelo.EnviarEmailFactura"/>
 </qualifiedTypeNameHistroy>

@@ -18,8 +18,8 @@ import javax.mail.internet.MimeMultipart;
 import javax.swing.JOptionPane;
 
 public class EnviarEmailFactura {
-    private static String emailFrom = "birbumaxi@gmail.com";
-    private static String passwordFrom = "caswdqajkwiyfriz";
+    private static String emailFrom = "discoteca.green.planet.707037@gmail.com";
+    private static String passwordFrom = "ccccofazbuxakakd";
     private String emailTo;
     private String subject;
     private String content;
@@ -50,7 +50,7 @@ public class EnviarEmailFactura {
     
     private void crearEmail() {
         emailTo = correoDestino;
-        subject = "FACTURA BIRBUMAXI";
+        subject = "FACTURA GREEN PLANET";
         content = "Gracias por su compra, vuelva pronto.";
         
         // Simple mail transfer protocol

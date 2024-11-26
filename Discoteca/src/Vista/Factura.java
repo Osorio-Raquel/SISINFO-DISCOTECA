@@ -11,6 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import Modelo.EnviarEmailFactura;
+import Modelo.FacturaEnPDF;
 import conexionBase.conexionBD;
 
 import javax.swing.JLabel;
@@ -39,6 +41,7 @@ public class Factura extends JFrame {
 	private JTextField txtNit;
 	private JTextField txtRazon;
 	private JTextField txtMonto;
+	private JTextField txtCorreo;
 	
 	public Factura(int volv) {
 		setTitle("Factura");
@@ -151,6 +154,16 @@ public class Factura extends JFrame {
 		txtMonto.setFont(new Font("SimSun-ExtB", Font.BOLD, 25));
 		panMonto.add(txtMonto);
 		txtMonto.setColumns(5);
+		
+		JLabel lblMonto_1 = new JLabel("Correo:");
+		lblMonto_1.setForeground(new Color(158, 200, 185));
+		lblMonto_1.setFont(new Font("Tw Cen MT", Font.BOLD, 25));
+		pan21.add(lblMonto_1);
+		
+		txtCorreo = new JTextField();
+		txtCorreo.setFont(new Font("SimSun-ExtB", Font.BOLD, 25));
+		txtCorreo.setColumns(40);
+		pan21.add(txtCorreo);
 		
 		JPanel panDetalle = new JPanel();
 		panDetalle.setBorder(new EmptyBorder(5, 25, 20, 25));
@@ -308,7 +321,7 @@ public class Factura extends JFrame {
 		                if (rowsAffected > 0) {
 		                    JOptionPane.showMessageDialog(null, "Factura registrada exitosamente.");
 
-		                    String insertDetalleQuery = "INSERT INTO DetalleFactura (ID_Factura, ID_Producto, Cantidad, Total) VALUES (?, ?, ?, ?)";
+		                    String insertDetalleQuery = "INSERT INTO DetalleFactura (ID_Factura, ID_Producto, ID_Reserva, Cantidad, Subtotal) VALUES (?, ?, ?, ?, ?)";
 		                    try (PreparedStatement pstmtDetalle = conn.prepareStatement(insertDetalleQuery)) {
 		                        for (int i = 0; i < model.getRowCount(); i++) {
 		                            String concepto = (String) model.getValueAt(i, 0);
@@ -322,19 +335,34 @@ public class Factura extends JFrame {
 		                                if (rsProducto.next()) {
 		                                    int idProducto = rsProducto.getInt("ID_Producto");
 
-		                                    double totalDetalle = cantidad * subtotal; 
-		                                    pstmtDetalle.setInt(1, nuevoIdFactura);
-		                                    pstmtDetalle.setInt(2, idProducto);
-		                                    pstmtDetalle.setInt(3, cantidad);
-		                                    pstmtDetalle.setDouble(4, totalDetalle);
-		                                    pstmtDetalle.executeUpdate();
+		                                    double totalDetalle = cantidad * subtotal;
 		                                }
 		                            }
 		                        }
 		                    }
 
 		                    JOptionPane.showMessageDialog(null, String.format("Factura registrada.\nCambio: $%.2f", cambio));
+		                    String queryIdMax = "SELECT MAX(ID_Factura) AS MaxFactura FROM DetalleFactura";
+		            		conexionBD conec= new conexionBD();
 
+		            		try (Connection connec = conec.conexion();
+		            		     Statement stmt1 = connec.createStatement()) {
+
+		            		    ResultSet rsMax1 = stmt1.executeQuery(queryIdMax);
+		            		    int maxIdFactura = -1;
+		            		    if (rsMax1.next()) {
+		            		        maxIdFactura = rsMax.getInt("MaxFactura");
+		            		    }
+		            		    System.out.println("ID de la factura" + maxIdFactura);
+		            		    FacturaEnPDF fac = new FacturaEnPDF(maxIdFactura, txtNit.getText(), txtRazon.getText());
+		            		    fac.GenerarReporte(Double.parseDouble(txtMonto.getText()));
+		            		    EnviarEmailFactura env = new EnviarEmailFactura(txtCorreo.getText());
+		            		    env.EnviarCorreo();
+
+		            		} catch (SQLException ex) {
+		            		    ex.printStackTrace();
+		            		    JOptionPane.showMessageDialog(null, "No se puedo generar la factura.");
+		            		}
 		                    if (volv == 1) {
 		                        Bartender bar = new Bartender();
 		                        bar.setVisible(true);

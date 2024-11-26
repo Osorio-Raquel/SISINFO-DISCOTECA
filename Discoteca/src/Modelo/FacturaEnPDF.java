@@ -31,6 +31,8 @@ import conexionBase.conexionBD;
 public class FacturaEnPDF extends ReportePapa{
 	
 	public int facID;
+	public String nombre;
+	public String nit;
 	
 	public void setFacID(int facID) {
 		this.facID = facID;
@@ -40,8 +42,10 @@ public class FacturaEnPDF extends ReportePapa{
 		return facID;
 	}
 	
-	public FacturaEnPDF(int facID) {
+	public FacturaEnPDF(int facID, String nombre, String nit) {
 		this.facID = facID;
+		this.nombre = nombre;
+		this.nit =  nit;
 	}
 	
 	@Override
@@ -103,7 +107,7 @@ public class FacturaEnPDF extends ReportePapa{
             
             Font fechayHora = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
             
-            String datosC = "NIT: " + nitCliente() + "\nNombre/RazonSocial: " + nombreCliente() + "\nFecha y hora: " + fechaFactura();
+            String datosC = "NIT: " + nit + "\nNombre/RazonSocial: " + nombre + "\nFecha y hora: " + fechaFactura();
             
             Paragraph datosCliente = new Paragraph(datosC, fechayHora);
             document.add(datosCliente);
@@ -206,10 +210,10 @@ public class FacturaEnPDF extends ReportePapa{
 	
 	private ArrayList<DatosFacturaPDF> obtenerDatos (){
 		ArrayList<DatosFacturaPDF> inv = new ArrayList<>();
-		String consulta= "select productos.nombre, productos.precio_venta, producto_factura.cantidad, producto_factura.subtotal\r\n"
-				+ "from productos, producto_factura\r\n"
-				+ "where producto_factura.id_factura = " + facID + "\r\n"
-				+ "and producto_factura.ID_producto = productos.ID_producto;";
+		String consulta= "select pr.nombre, dt.cantidad, pr.precio, dt.subtotal\r\n"
+				+ "from Producto as pr, DetalleFactura as dt\r\n"
+				+ "where pr.ID_Producto = dt.ID_Producto\r\n"
+				+ "and  dt.ID_Factura = " + facID + ";";
 		conexionBD conec= new conexionBD();
 		Connection conn= conec.conexion();
 		PreparedStatement ps= null;
@@ -219,10 +223,10 @@ public class FacturaEnPDF extends ReportePapa{
 			rs=ps.executeQuery();
 			int num = 1;
 			while(rs.next()) {
-				String nombre = rs.getString("nombre");
-				double precioU = rs.getDouble("precio_venta");
-				double cantidad = rs.getDouble("cantidad");
-				double subtotal = rs.getDouble("subtotal");
+				String nombre = rs.getString("pr.nombre");
+				double precioU = rs.getDouble("pr.precio");
+				double cantidad = rs.getDouble("dt.cantidad");
+				double subtotal = rs.getDouble("dt.subtotal");
 				DatosFacturaPDF datos = new DatosFacturaPDF(num, nombre, cantidad, precioU, subtotal);
 				inv.add(datos);
 				num++;
@@ -244,11 +248,7 @@ public class FacturaEnPDF extends ReportePapa{
 	
 	private String nitCliente () {
 		String nit = "";
-		String consulta= "select NIT\r\n"
-				+ "from persona\r\n"
-				+ "where ID_persona = (select id_persona\r\n"
-				+ "from factura\r\n"
-				+ "where factura.id_factura = " + facID + ");";
+		String consulta= "select ID_Cliente from Factura where ID_Factura = " + facID +";";
 		conexionBD conec= new conexionBD();
 		Connection conn= conec.conexion();
 		PreparedStatement ps= null;
@@ -257,7 +257,7 @@ public class FacturaEnPDF extends ReportePapa{
 			ps=conn.prepareStatement(consulta);
 			rs=ps.executeQuery();
 			if(rs.next()) {
-				nit = rs.getString("NIT");
+				nit = rs.getString("ID_Cliente");
 			}
 		}catch(Exception e) {
 			System.out.println(e);
@@ -276,7 +276,7 @@ public class FacturaEnPDF extends ReportePapa{
 	
 	private String fechaFactura () {
 		String fecha = "";
-		String consulta= "select fecha from factura where id_factura = " + facID + ";";
+		String consulta= "select Fecha from Factura where ID_Factura = " + facID + ";";
 		conexionBD conec= new conexionBD();
 		Connection conn= conec.conexion();
 		PreparedStatement ps= null;
@@ -285,7 +285,7 @@ public class FacturaEnPDF extends ReportePapa{
 			ps=conn.prepareStatement(consulta);
 			rs=ps.executeQuery();
 			if(rs.next()) {
-				fecha = rs.getString("fecha");
+				fecha = rs.getString("Fecha");
 			}
 		}catch(Exception e) {
 			
@@ -305,7 +305,7 @@ public class FacturaEnPDF extends ReportePapa{
 	private String nombreCliente () {
 		String nom = "";
 		String nitB = nitCliente();
-		String consulta= "select nombre from persona where NIT = " + nitB + ";";
+		String consulta= "select RazonSocialNombre from Cliente where NIT = " + nitB + ";";
 		conexionBD conec= new conexionBD();
 		Connection conn= conec.conexion();
 		PreparedStatement ps= null;
@@ -314,7 +314,7 @@ public class FacturaEnPDF extends ReportePapa{
 			ps=conn.prepareStatement(consulta);
 			rs=ps.executeQuery();
 			if(rs.next()) {
-				nom = rs.getString("nombre");
+				nom = rs.getString("RazonSocialNombre");
 			}
 		}catch(Exception e) {
 			
