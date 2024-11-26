@@ -1,6 +1,5 @@
 package Controlador;
 
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -8,19 +7,16 @@ import Modelo.EnviarEmailFactura;
 import Modelo.FacturaEnPDF;
 import Vista.Factura;
 import Vista.Reportes;
-import Vista.MenuGerente;
-import Vista.Ventas;
+import Vista.Administrador;
+import Vista.Bartender;
 
-//import Vista.MenuGerente;
-
-import Vista.login;
+import Vista.Login;
 import conexionBase.conexionBD;
 
 public class menuPrincipal {
 
 	public static void main(String[] args) {
-		login l = new login();
+		Login l = new Login();
 		l.setVisible(true);
-		
 	}
 }
