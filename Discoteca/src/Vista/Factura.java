@@ -181,7 +181,6 @@ public class Factura extends JFrame {
 		    }
 		});
 
-		// Agregar la tabla al JScrollPane
 		JScrollPane panTablaDet = new JScrollPane();
 		panTablaDet.setBackground(new Color(9, 38, 53));
 		panDetalle.add(panTablaDet, BorderLayout.CENTER);
@@ -191,14 +190,11 @@ public class Factura extends JFrame {
 		lblCostoTotal.setForeground(new Color(112, 235, 179));
 		lblCostoTotal.setHorizontalAlignment(SwingConstants.RIGHT);
 
-		// Obtener el modelo de la tabla
 		DefaultTableModel model = (DefaultTableModel) tblDetalle.getModel();
-		model.setRowCount(0);  // Limpiar las filas anteriores
+		model.setRowCount(0); 
 
-		// Consulta para obtener el ID de factura más grande
 		String queryIdMax = "SELECT MAX(ID_Factura) AS MaxFactura FROM DetalleFactura";
 
-		// Consulta para obtener los detalles del ID de factura más grande
 		String queryDetalles = "SELECT df.ID_Producto, p.Nombre, df.Cantidad, df.Subtotal " +
 		                       "FROM DetalleFactura df " +
 		                       "JOIN Producto p ON df.ID_Producto = p.ID_Producto " +
@@ -208,39 +204,34 @@ public class Factura extends JFrame {
 		try (Connection conn = conec.conexion();
 		     Statement stmt = conn.createStatement()) {
 
-		    // Obtener el ID de factura más grande
 		    ResultSet rsMax = stmt.executeQuery(queryIdMax);
 		    int maxIdFactura = -1;
 		    if (rsMax.next()) {
 		        maxIdFactura = rsMax.getInt("MaxFactura");
 		    }
 
-		    // Si no hay facturas, mostrar un mensaje y salir
 		    if (maxIdFactura == -1) {
 		        JOptionPane.showMessageDialog(null, "No hay facturas en la base de datos.");
 		        return;
 		    }
-		    double costoTotal = 0.0; // Inicializar el costo total
+		    double costoTotal = 0.0; 
 
 
-		    // Preparar la consulta para obtener los detalles del ID de factura más grande
 		    try (PreparedStatement pstmt = conn.prepareStatement(queryDetalles)) {
-		        pstmt.setInt(1, maxIdFactura);  // Establecer el ID de factura más grande
+		        pstmt.setInt(1, maxIdFactura); 
 		        ResultSet rsDetalles = pstmt.executeQuery();
 
-		        // Llenar la tabla con los datos obtenidos
 		        while (rsDetalles.next()) {
 		            String concepto = rsDetalles.getString("Nombre");
 		            int cantidad = rsDetalles.getInt("Cantidad");
 		            double costo = rsDetalles.getDouble("Subtotal");
-		            costoTotal += costo; // Acumular el subtotal en el costo total
+		            costoTotal += costo; 
 
 		            model.addRow(new Object[]{concepto, cantidad, costo});
 		        }
 		    }
 		    lblCostoTotal.setText(String.format("Costo Total: $%.2f", costoTotal));
 
-		    // Asegurar que la tabla se redibuje
 		    tblDetalle.revalidate();
 		    tblDetalle.repaint();
 
@@ -250,8 +241,7 @@ public class Factura extends JFrame {
 		}
 		
 
-		// Agregar el JLabel al panel de detalles o a algún contenedor
-		panDetalle.add(lblCostoTotal, BorderLayout.SOUTH); // Posición en la parte inferior
+		panDetalle.add(lblCostoTotal, BorderLayout.SOUTH); 
 		JPanel panBtn = new JPanel();
 		panBtn.setBackground(new Color(9, 38, 53));
 		panBtn.setBorder(new EmptyBorder(0, 15, 25, 15));
@@ -278,7 +268,6 @@ public class Factura extends JFrame {
 		JButton btnFacturar = new JButton("Facturar");
 		btnFacturar.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
-		        // Verificar que el monto ingresado sea válido
 		        double monto = 0;
 		        try {
 		        	String montoStr = txtMonto.getText().replace(",", ".");
@@ -288,51 +277,44 @@ public class Factura extends JFrame {
 		            return;
 		        }
 
-		        // Obtener el costo total
 		        double costoTotal = Double.parseDouble(lblCostoTotal.getText().replace("Costo Total: $", "").replace(",", ".").trim());
 
-		        // Verificar que el monto sea suficiente
 		        if (monto < costoTotal) {
 		            JOptionPane.showMessageDialog(null, "El monto debe ser mayor o igual al costo total.");
 		            return;
 		        }
 
-		        // Calcular el cambio
 		        double cambio = monto - costoTotal;
 
-		        // Consultas SQL
 		        String insertFacturaQuery = "INSERT INTO Factura (ID_Factura, Fecha, ID_cliente, Total) VALUES (?, ?, ?, ?)";
 		        String selectMaxIdQuery = "SELECT MAX(ID_Factura) AS MaxFactura FROM Factura";
 
 		        try (Connection conn = conec.conexion()) {
-		            // Obtener el ID_Factura máximo actual
+
 		            Statement stmt = conn.createStatement();
 		            ResultSet rsMax = stmt.executeQuery(selectMaxIdQuery);
-		            int nuevoIdFactura = 1;  // Si no hay facturas, comenzamos desde el ID 1
+		            int nuevoIdFactura = 1; 
 		            if (rsMax.next()) {
-		                nuevoIdFactura = rsMax.getInt("MaxFactura") + 1;  // Incrementamos el ID de la última factura
+		                nuevoIdFactura = rsMax.getInt("MaxFactura") + 1;  
 		            }
 
-		            // Insertar la nueva factura
 		            try (PreparedStatement pstmt = conn.prepareStatement(insertFacturaQuery)) {
-		                pstmt.setInt(1, nuevoIdFactura);  // Nuevo ID_Factura
-		                pstmt.setDate(2, new java.sql.Date(System.currentTimeMillis()));  // Fecha actual
-		                pstmt.setInt(3, Integer.parseInt(txtNit.getText()));  // Suponiendo que NIT es ID_cliente
-		                pstmt.setDouble(4, costoTotal);  // Total de la factura
+		                pstmt.setInt(1, nuevoIdFactura);  
+		                pstmt.setDate(2, new java.sql.Date(System.currentTimeMillis()));  
+		                pstmt.setInt(3, Integer.parseInt(txtNit.getText())); 
+		                pstmt.setDouble(4, costoTotal); 
 
 		                int rowsAffected = pstmt.executeUpdate();
 		                if (rowsAffected > 0) {
 		                    JOptionPane.showMessageDialog(null, "Factura registrada exitosamente.");
 
-		                    // Registrar los detalles de la factura en DetalleFactura
 		                    String insertDetalleQuery = "INSERT INTO DetalleFactura (ID_Factura, ID_Producto, Cantidad, Total) VALUES (?, ?, ?, ?)";
 		                    try (PreparedStatement pstmtDetalle = conn.prepareStatement(insertDetalleQuery)) {
 		                        for (int i = 0; i < model.getRowCount(); i++) {
 		                            String concepto = (String) model.getValueAt(i, 0);
 		                            int cantidad = (Integer) model.getValueAt(i, 1);
-		                            double subtotal = (Double) model.getValueAt(i, 2);  // Esto sigue siendo el subtotal
+		                            double subtotal = (Double) model.getValueAt(i, 2);  
 
-		                            // Obtener el ID del producto basado en el concepto
 		                            String selectProductoIdQuery = "SELECT ID_Producto FROM Producto WHERE Nombre = ?";
 		                            try (PreparedStatement pstmtProducto = conn.prepareStatement(selectProductoIdQuery)) {
 		                                pstmtProducto.setString(1, concepto);
@@ -340,8 +322,7 @@ public class Factura extends JFrame {
 		                                if (rsProducto.next()) {
 		                                    int idProducto = rsProducto.getInt("ID_Producto");
 
-		                                    // Insertar los detalles con el campo Total
-		                                    double totalDetalle = cantidad * subtotal;  // Calculamos el total para ese detalle
+		                                    double totalDetalle = cantidad * subtotal; 
 		                                    pstmtDetalle.setInt(1, nuevoIdFactura);
 		                                    pstmtDetalle.setInt(2, idProducto);
 		                                    pstmtDetalle.setInt(3, cantidad);
@@ -352,10 +333,8 @@ public class Factura extends JFrame {
 		                        }
 		                    }
 
-		                    // Mostrar el cambio en un mensaje
 		                    JOptionPane.showMessageDialog(null, String.format("Factura registrada.\nCambio: $%.2f", cambio));
 
-		                    // Redirigir o cerrar el formulario actual
 		                    if (volv == 1) {
 		                        Bartender bar = new Bartender();
 		                        bar.setVisible(true);
