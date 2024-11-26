@@ -6,6 +6,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import Modelo.verificacionCorreo;
 
@@ -23,6 +25,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -82,20 +85,51 @@ public class Login extends JFrame {
 		txtUser.setColumns(25);
 		
 		JPanel panPass = new JPanel();
-		panPass.setBorder(new EmptyBorder(0, 0, 70, 0));
+		panPass.setBorder(new EmptyBorder(0, 0, 30, 0));
 		panPass.setBackground(new Color(9, 38, 53));
 		panLogin.add(panPass);
 		panPass.setLayout(new BoxLayout(panPass, BoxLayout.Y_AXIS));
 		
+		JPanel panPasss = new JPanel();
+		panPasss.setBackground(new Color(9, 38, 53));
+		panPass.add(panPasss);
+		panPasss.setLayout(new BoxLayout(panPasss, BoxLayout.Y_AXIS));
+		
 		JLabel lblPass = new JLabel("Contraseña:");
+		lblPass.setHorizontalAlignment(SwingConstants.LEFT);
 		lblPass.setForeground(new Color(158, 200, 185));
 		lblPass.setFont(new Font("Tw Cen MT", Font.BOLD, 25));
-		panPass.add(lblPass);
+		panPasss.add(lblPass);
 		
-		JPasswordField txtPass = new JPasswordField();
-		txtPass.setFont(new Font("Tw Cen MT", Font.BOLD, 25));
-		panPass.add(txtPass);
-		txtPass.setColumns(25);
+		JPasswordField passwordField = new JPasswordField();
+		passwordField.setFont(new Font("Tw Cen MT", Font.BOLD, 25));
+		panPasss.add(passwordField);
+		
+		JPanel panChk = new JPanel();
+		panChk.setBackground(new Color(9, 38, 53));
+		FlowLayout flowLayout = (FlowLayout) panChk.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		panPass.add(panChk);
+		
+		JCheckBox chbxShowPass = new JCheckBox("Mostrar contraseña");
+		chbxShowPass.setForeground(new Color(217, 236, 233));
+		chbxShowPass.setBackground(new Color(9, 38, 53));
+		chbxShowPass.setFont(new Font("Tw Cen MT", Font.PLAIN, 20));
+		panPass.add(chbxShowPass);
+
+		chbxShowPass.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if(chbxShowPass.isSelected()) {
+					passwordField.setEchoChar((char) 0);
+					passwordField.setFont(new Font("SimSun-ExtB", Font.BOLD, 25));
+				} else {
+					passwordField.setEchoChar('\u2022');
+					passwordField.setFont(new Font("Tw Cen MT", Font.BOLD, 25));
+				}
+			}
+		});
 		
 		JPanel panBtn = new JPanel();
 		panBtn.setBorder(new EmptyBorder(0, 0, 35, 0));
@@ -109,10 +143,10 @@ public class Login extends JFrame {
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				verificacionCorreo ver1= new verificacionCorreo();
-                String contrasena= new String(txtPass.getText());
+                String contrasena= new String(passwordField.getPassword());
                 try {
                     if(ver1.verificador(txtUser.getText(), contrasena)) {
-                        JOptionPane.showMessageDialog(null, "ingreso permitido");
+                        JOptionPane.showMessageDialog(null, "Ingreso permitido.");
                         int cargoo = ver1.verificadorTipo(txtUser.getText());
                         if(cargoo == 1) {
                         	Administrador ger = new Administrador();
@@ -128,7 +162,7 @@ public class Login extends JFrame {
                             dispose();
                         }
                         txtUser.setText("");
-                        txtPass.setText("");
+                        passwordField.setText("");
                
                     }else {
                         JOptionPane.showMessageDialog(null, "ingreso denegado");
@@ -138,7 +172,7 @@ public class Login extends JFrame {
                 }
 
                 txtUser.setText("");
-                txtPass.setText("");
+                passwordField.setText("");
 			}
 		});
 		btnLogin.setForeground(new Color(217, 236, 233));
